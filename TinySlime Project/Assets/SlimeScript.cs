@@ -14,14 +14,32 @@ public class SlimeScript : MonoBehaviour
 
     private bool timerIsActive = false;
 
-    private bool canMove = true;
+    [HideInInspector]
+    public bool canMove = true;
+
+    private Rigidbody2D rb;
+
+    private void Start()
+    {
+        rb = GetComponent<Rigidbody2D>();
+    }
 
     private void Update()
     {
 
+        transform.rotation = new(transform.rotation.x, transform.rotation.y, 0, transform.rotation.w);
+
         if(!timerIsActive && canMove)
         {
             StartCoroutine(JumpTimer());
+        }
+
+        if(!canMove)
+        {
+            StopAllCoroutines();
+            timerIsActive = false;
+            isJumping = false;
+            anim.SetBool("isIdle", true);
         }
 
     }
@@ -69,18 +87,44 @@ public class SlimeScript : MonoBehaviour
         while (Time.time - startTime < moveDuration)
         {
             float normalizedTime = (Time.time - startTime) / moveDuration;
-            transform.position = Vector2.Lerp(initialPosition, targetPosition, normalizedTime);
+            Vector2 newPosition = Vector2.Lerp(initialPosition, targetPosition, normalizedTime);
+
+            // Check for collisions before updating the position
+            if (!IsColliding(newPosition))
+            {
+                rb.MovePosition(newPosition);
+            }
 
             yield return null;
         }
 
         // Ensure the object reaches the exact target position
-        transform.position = targetPosition;
+        rb.MovePosition(targetPosition);
 
         isJumping = false;
         anim.SetBool("isIdle", true);
         timerIsActive = false;
     }
 
+    private bool IsColliding(Vector2 newPosition)
+    {
+        Collider2D[] colliders = Physics2D.OverlapCircleAll(newPosition, 1.2f); // Adjust the 0.2f radius as needed
+
+        foreach (Collider2D collider in colliders)
+        {
+            if (collider != null && collider != GetComponent<Collider2D>() && collider.isTrigger == false)
+            {
+                // Check for any 2D collider in the way, except the slime itself and any triggers
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.DrawWireSphere(transform.position - new Vector3(0, 0.2f), 1.2f);
+    }
 
 }

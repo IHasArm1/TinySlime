@@ -6,6 +6,7 @@ public class GaggleMenu : MonoBehaviour
 {
 
     public GameObject TestSlime;
+    public GameObject TestSlimeCoin;
 
     public Vector2 minSpawnLoc, maxSpawnLoc;
 
@@ -32,6 +33,11 @@ public class GaggleMenu : MonoBehaviour
 
 
         Instantiate(TestSlime, new Vector2(randX, randY), Quaternion.identity);
+    }
+
+    public void SpawnSlimeCoin()
+    {
+        Instantiate(TestSlimeCoin, new Vector3(Camera.main.transform.position.x, Camera.main.transform.position.y, -5), Quaternion.identity);
     }
 
 }

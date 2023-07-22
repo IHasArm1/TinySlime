@@ -58,21 +58,13 @@ public class GameManager : MonoBehaviour
 
         float moveX = plControls.Player.Movement.ReadValue<Vector2>().x;
         float moveY = plControls.Player.Movement.ReadValue<Vector2>().y;
-        if (moveX > 0)
+        if (moveX > 0 || moveX < 0)
         {
-            gameCamera.position += Vector3.right * Time.deltaTime * cameraSpeed;
+            gameCamera.position += moveX * Vector3.right * Time.deltaTime * cameraSpeed;
         }
-        if (moveX < 0)
+        if (moveY > 0 || moveY < 0)
         {
-            gameCamera.position += Vector3.left * Time.deltaTime * cameraSpeed;
-        }
-        if (moveY > 0)
-        {
-            gameCamera.position += Vector3.up * Time.deltaTime * cameraSpeed;
-        }
-        if (moveY < 0)
-        {
-            gameCamera.position += Vector3.down * Time.deltaTime * cameraSpeed;
+            gameCamera.position += moveY * Vector3.up * Time.deltaTime * cameraSpeed;
         }
 
     }
